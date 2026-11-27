@@ -181,6 +181,13 @@ schema-validation exit code and both expected outcomes of the `--fail-on high` g
 安全规则按上下文区分：命令类参数才做 shell 规则，路径/URL 规则对所有字符串生效，
 以减少误报（例如翻译文本里的分号不会被误判）。本项目是防御性参数校验器，不是沙箱，
 也不声称发现新漏洞或新 CVE；真正的修复是最小权限 + 参数化工具实现。
+
+## 视频演示
+
+B站：https://www.bilibili.com/video/BV1BE1pztEYA（66 秒）
+
+视频使用本仓库自带的合成/无害样例与真实命令输出；本项目是启发式检测工具，边界见上文说明。
+
 ## License
 
 MIT -- see [LICENSE](LICENSE). Prior art acknowledged: CWE-78, CWE-22, CWE-918,
