@@ -36,13 +36,15 @@ jobs:
       - name: Unit tests (unittest, no third-party dependencies)
         run: python -m unittest discover -s tests -t .
 
-      - name: CLI smoke test: dangerous calls produce high findings
-        run: python -m toolarg_guard scan examples/dangerous_call.json --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['high'] >= 4, d['summary']; print('findings:', d['summary'])"
+      - name: "CLI smoke test: dangerous calls produce high findings"
+        run: |
+          python -m toolarg_guard scan examples/dangerous_call.json --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['high'] >= 4, d['summary']; print('findings:', d['summary'])"
 
-      - name: Clean calls pass the strictest gate
-        run: python -m toolarg_guard scan examples/clean_call.json --fail-on low
+      - name: "Clean calls pass the strictest gate"
+        run: |
+          python -m toolarg_guard scan examples/clean_call.json --fail-on low
 
-      - name: JSON-Schema validation catches the malformed call (expected exit 1)
+      - name: "JSON-Schema validation catches the malformed call (expected exit 1)"
         run: |
           set +e
           python -m toolarg_guard scan examples/bad_schema_call.json --tools examples/tools.json --fail-on medium
@@ -51,7 +53,7 @@ jobs:
           echo "schema scan exit code: $code"
           test "$code" -eq 1
 
-      - name: CI gate catches the dangerous calls (expected exit code 1)
+      - name: "CI gate catches the dangerous calls (expected exit code 1)"
         run: |
           set +e
           python -m toolarg_guard scan examples/dangerous_call.json --fail-on high
