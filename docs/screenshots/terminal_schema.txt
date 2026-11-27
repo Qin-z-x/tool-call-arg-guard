@@ -1,0 +1,12 @@
+$ python -m toolarg_guard scan examples/bad_schema_call.json --tools examples/tools.json
+toolarg-guard 0.1.0  scan  examples/bad_schema_call.json  (3 call(s))
+call 1/3  tool=weather.get  findings=2  max_severity=medium
+  MEDIUM TOOL-SCHEMA-TYPE         arguments.city               expected type string, got integer
+  MEDIUM TOOL-SCHEMA-ENUM         arguments.units              value 'kelvin' is not one of ['metric', 'imperial']
+call 2/3  tool=weather.get  findings=2  max_severity=medium
+  MEDIUM TOOL-SCHEMA-REQUIRED     arguments.city               required property is missing
+  MEDIUM TOOL-SCHEMA-RANGE        arguments.days               value above maximum 14
+call 3/3  tool=weather.get  findings=1  max_severity=medium
+  MEDIUM TOOL-SCHEMA-PROPERTY     arguments.debug              property is not allowed by additionalProperties: false
+summary: 5 finding(s): 0 high, 5 medium, 0 low
+[exit code: 0]

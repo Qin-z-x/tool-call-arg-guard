@@ -1,0 +1,14 @@
+$ python -m toolarg_guard scan examples/dangerous_call.json
+toolarg-guard 0.1.0  scan  examples/dangerous_call.json  (4 call(s))
+call 1/4  tool=shell.run  findings=3  max_severity=high
+  HIGH   ARG-SSRF-METADATA        arguments.command            URL targets a cloud metadata endpoint (169.254.169.254)
+  HIGH   ARG-COMMAND-CHAIN        arguments.command            unquoted command chaining (; && ||) in a shell argument
+  HIGH   ARG-PATH-TRAVERSAL       arguments.cwd                path traversal sequence escapes the working directory
+call 2/4  tool=file.read  findings=1  max_severity=high
+  HIGH   ARG-ABS-SENSITIVE-PATH   arguments.path               sensitive absolute path (credentials, system or autostart location)
+call 3/4  tool=http.fetch  findings=1  max_severity=high
+  HIGH   ARG-SSRF-LOOPBACK        arguments.url                URL targets loopback/unspecified host '127.0.0.1'
+call 4/4  tool=shell.run  findings=1  max_severity=high
+  HIGH   ARG-ABS-SENSITIVE-PATH   arguments.command            sensitive absolute path (credentials, system or autostart location)
+summary: 6 finding(s): 6 high, 0 medium, 0 low
+[exit code: 0]

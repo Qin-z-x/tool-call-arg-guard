@@ -1,0 +1,7 @@
+{
+  "calls": [
+    {"tool": "weather.get", "arguments": {"city": 7, "units": "kelvin"}},
+    {"tool": "weather.get", "arguments": {"units": "metric", "days": 99}},
+    {"tool": "weather.get", "arguments": {"city": "Berlin", "debug": true}}
+  ]
+}

@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tool-call-arg-guard"
+version = "0.1.0"
+description = "Validate model-generated tool-call arguments: JSON-Schema subset checks plus shell chaining, path traversal, sensitive absolute paths, SSRF-ish URLs (localhost/metadata IPs), null bytes and oversized arguments. Stdlib-only Python CLI."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "toolarg-guard contributors" }]
+keywords = ["tool-calling", "llm", "security", "json-schema", "ssrf", "command-injection", "cli", "python"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Security",
+]
+dependencies = []
+
+[project.scripts]
+toolarg-guard = "toolarg_guard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Qin-z-x/tool-call-arg-guard"
+Repository = "https://github.com/Qin-z-x/tool-call-arg-guard"
+Issues = "https://github.com/Qin-z-x/tool-call-arg-guard/issues"
+Changelog = "https://github.com/Qin-z-x/tool-call-arg-guard/blob/main/CHANGELOG.md"
+Evidence = "https://github.com/Qin-z-x/tool-call-arg-guard/blob/main/docs/EVIDENCE.md"
+ThreatModel = "https://github.com/Qin-z-x/tool-call-arg-guard/blob/main/docs/THREAT_MODEL.md"
+
+[tool.setuptools]
+packages = ["toolarg_guard"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

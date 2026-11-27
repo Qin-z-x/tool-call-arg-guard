@@ -1,0 +1,23 @@
+{
+  "calls": [
+    {
+      "tool": "shell.run",
+      "arguments": {
+        "command": "ls; rm -rf /var/lib/data && curl http://169.254.169.254/latest/meta-data/",
+        "cwd": "../../srv/app"
+      }
+    },
+    {
+      "tool": "file.read",
+      "arguments": {"path": "C:\\Windows\\System32\\config\\SAM"}
+    },
+    {
+      "tool": "http.fetch",
+      "arguments": {"url": "http://127.0.0.1:8080/admin"}
+    },
+    {
+      "tool": "shell.run",
+      "arguments": {"command": "cat ~/.ssh/id_rsa"}
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.15",
+    "package_version": "0.1.0",
+    "captured_at_utc": "2026-11-27T00:46:10Z",
+    "command_count": 6,
+    "test_count": 42,
+    "tests_ok": true
+  },
+  "runs": [
+    {
+      "index": 0,
+      "label": "scan dangerous tool calls",
+      "command": "python -m toolarg_guard scan examples/dangerous_call.json",
+      "exit_code": 0,
+      "stdout": "toolarg-guard 0.1.0  scan  examples/dangerous_call.json  (4 call(s))\ncall 1/4  tool=shell.run  findings=3  max_severity=high\n  HIGH   ARG-SSRF-METADATA        arguments.command            URL targets a cloud metadata endpoint (169.254.169.254)\n  HIGH   ARG-COMMAND-CHAIN        arguments.command            unquoted command chaining (; && ||) in a shell argument\n  HIGH   ARG-PATH-TRAVERSAL       arguments.cwd                path traversal sequence escapes the working directory\ncall 2/4  tool=file.read  findings=1  max_severity=high\n  HIGH   ARG-ABS-SENSITIVE-PATH   arguments.path               sensitive absolute path (credentials, system or autostart location)\ncall 3/4  tool=http.fetch  findings=1  max_severity=high\n  HIGH   ARG-SSRF-LOOPBACK        arguments.url                URL targets loopback/unspecified host '127.0.0.1'\ncall 4/4  tool=shell.run  findings=1  max_severity=high\n  HIGH   ARG-ABS-SENSITIVE-PATH   arguments.command            sensitive absolute path (credentials, system or autostart location)\nsummary: 6 finding(s): 6 high, 0 medium, 0 low\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 1,
+      "label": "machine-readable scan",
+      "command": "python -m toolarg_guard scan examples/dangerous_call.json --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"tool\": \"toolarg-guard\",\n  \"version\": \"0.1.0\",\n  \"summary\": {\n    \"calls\": 4,\n    \"total\": 6,\n    \"counts\": {\n      \"low\": 0,\n      \"medium\": 0,\n      \"high\": 6\n    },\n    \"max_severity\": \"high\"\n  },\n  \"calls\": [\n    {\n      \"index\": 0,\n      \"tool\": \"shell.run\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-SSRF-METADATA\",\n          \"severity\": \"high\",\n          \"message\": \"URL targets a cloud metadata endpoint (169.254.169.254)\",\n          \"path\": \"arguments.command\",\n          \"fix\": \"Block cloud metadata endpoints (169.254.169.254, metadata.google.internal, 100.100.100.200) at the network layer, not only in the validator.\",\n          \"data\": {\n            \"url\": \"http://169.254.169.254/latest/meta-data/\"\n          }\n        },\n        {\n          \"code\": \"ARG-COMMAND-CHAIN\",\n          \"severity\": \"high\",\n          \"message\": \"unquoted command chaining (; && ||) in a shell argument\",\n          \"path\": \"arguments.command\",\n          \"fix\": \"Never pass a model-generated string to a shell. Use an argv list with no shell=True and reject unquoted ; && ||.\",\n          \"data\": {\n            \"value\": \"ls; rm -rf /var/lib/data && curl http://169.254.169.254/latest/meta-data/\"\n          }\n        },\n        {\n          \"code\": \"ARG-PATH-TRAVERSAL\",\n          \"severity\": \"high\",\n          \"message\": \"path traversal sequence escapes the working directory\",\n          \"path\": \"arguments.cwd\",\n          \"fix\": \"Normalise the path, join it under a fixed root and verify the resolved path stays inside that root (realpath/commonpath/is_relative_to).\",\n          \"data\": {\n            \"value\": \"../../srv/app\"\n          }\n        }\n      ],\n      \"total\": 3,\n      \"max_severity\": \"high\"\n    },\n    {\n      \"index\": 1,\n      \"tool\": \"file.read\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-ABS-SENSITIVE-PATH\",\n          \"severity\": \"high\",\n          \"message\": \"sensitive absolute path (credentials, system or autostart location)\",\n          \"path\": \"arguments.path\",\n          \"fix\": \"Deny sensitive absolute paths explicitly; run the tool in a sandbox with only the needed directories mounted.\",\n          \"data\": {\n            \"value\": \"C:\\\\Windows\\\\System32\\\\config\\\\SAM\"\n          }\n        }\n      ],\n      \"total\": 1,\n      \"max_severity\": \"high\"\n    },\n    {\n      \"index\": 2,\n      \"tool\": \"http.fetch\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-SSRF-LOOPBACK\",\n          \"severity\": \"high\",\n          \"message\": \"URL targets loopback/unspecified host '127.0.0.1'\",\n          \"path\": \"arguments.url\",\n          \"fix\": \"Resolve the hostname, reject loopback/link-local/private ranges, and use an egress proxy with an allowlist.\",\n          \"data\": {\n            \"url\": \"http://127.0.0.1:8080/admin\"\n          }\n        }\n      ],\n      \"total\": 1,\n      \"max_severity\": \"high\"\n    },\n    {\n      \"index\": 3,\n      \"tool\": \"shell.run\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-ABS-SENSITIVE-PATH\",\n          \"severity\": \"high\",\n          \"message\": \"sensitive absolute path (credentials, system or autostart location)\",\n          \"path\": \"arguments.command\",\n          \"fix\": \"Deny sensitive absolute paths explicitly; run the tool in a sandbox with only the needed directories mounted.\",\n          \"data\": {\n            \"value\": \"cat ~/.ssh/id_rsa\"\n          }\n        }\n      ],\n      \"total\": 1,\n      \"max_severity\": \"high\"\n    }\n  ],\n  \"clean\": false,\n  \"path\": \"examples/dangerous_call.json\"\n}\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 2,
+      "label": "CI gate at high severity",
+      "command": "python -m toolarg_guard scan examples/dangerous_call.json --fail-on high",
+      "exit_code": 1,
+      "stdout": "toolarg-guard 0.1.0  scan  examples/dangerous_call.json  (4 call(s))\ncall 1/4  tool=shell.run  findings=3  max_severity=high\n  HIGH   ARG-SSRF-METADATA        arguments.command            URL targets a cloud metadata endpoint (169.254.169.254)\n  HIGH   ARG-COMMAND-CHAIN        arguments.command            unquoted command chaining (; && ||) in a shell argument\n  HIGH   ARG-PATH-TRAVERSAL       arguments.cwd                path traversal sequence escapes the working directory\ncall 2/4  tool=file.read  findings=1  max_severity=high\n  HIGH   ARG-ABS-SENSITIVE-PATH   arguments.path               sensitive absolute path (credentials, system or autostart location)\ncall 3/4  tool=http.fetch  findings=1  max_severity=high\n  HIGH   ARG-SSRF-LOOPBACK        arguments.url                URL targets loopback/unspecified host '127.0.0.1'\ncall 4/4  tool=shell.run  findings=1  max_severity=high\n  HIGH   ARG-ABS-SENSITIVE-PATH   arguments.command            sensitive absolute path (credentials, system or autostart location)\nsummary: 6 finding(s): 6 high, 0 medium, 0 low\n",
+      "stderr": "FAIL: 6 finding(s) at or above severity 'high'\n",
+      "expect_exit": 1
+    },
+    {
+      "index": 3,
+      "label": "clean tool calls pass",
+      "command": "python -m toolarg_guard scan examples/clean_call.json --fail-on low",
+      "exit_code": 0,
+      "stdout": "toolarg-guard 0.1.0  scan  examples/clean_call.json  (4 call(s))\ncall 1/4  tool=weather.get  findings=0  max_severity=none\ncall 2/4  tool=file.read  findings=0  max_severity=none\ncall 3/4  tool=http.fetch  findings=0  max_severity=none\ncall 4/4  tool=translate.text  findings=0  max_severity=none\nsummary: 0 finding(s): 0 high, 0 medium, 0 low\nPASS: no finding at or above severity 'low'\n",
+      "stderr": "",
+      "expect_exit": 0
+    },
+    {
+      "index": 4,
+      "label": "JSON-Schema validation of a malformed call",
+      "command": "python -m toolarg_guard scan examples/bad_schema_call.json --tools examples/tools.json",
+      "exit_code": 0,
+      "stdout": "toolarg-guard 0.1.0  scan  examples/bad_schema_call.json  (3 call(s))\ncall 1/3  tool=weather.get  findings=2  max_severity=medium\n  MEDIUM TOOL-SCHEMA-TYPE         arguments.city               expected type string, got integer\n  MEDIUM TOOL-SCHEMA-ENUM         arguments.units              value 'kelvin' is not one of ['metric', 'imperial']\ncall 2/3  tool=weather.get  findings=2  max_severity=medium\n  MEDIUM TOOL-SCHEMA-REQUIRED     arguments.city               required property is missing\n  MEDIUM TOOL-SCHEMA-RANGE        arguments.days               value above maximum 14\ncall 3/3  tool=weather.get  findings=1  max_severity=medium\n  MEDIUM TOOL-SCHEMA-PROPERTY     arguments.debug              property is not allowed by additionalProperties: false\nsummary: 5 finding(s): 0 high, 5 medium, 0 low\n",
+      "stderr": "",
+      "expect_exit": null
+    },
+    {
+      "index": 5,
+      "label": "report with fixes",
+      "command": "python -m toolarg_guard report examples/dangerous_call.json --json",
+      "exit_code": 0,
+      "stdout": "{\n  \"tool\": \"toolarg-guard\",\n  \"version\": \"0.1.0\",\n  \"summary\": {\n    \"calls\": 4,\n    \"total\": 6,\n    \"counts\": {\n      \"low\": 0,\n      \"medium\": 0,\n      \"high\": 6\n    },\n    \"max_severity\": \"high\"\n  },\n  \"calls\": [\n    {\n      \"index\": 0,\n      \"tool\": \"shell.run\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-SSRF-METADATA\",\n          \"severity\": \"high\",\n          \"message\": \"URL targets a cloud metadata endpoint (169.254.169.254)\",\n          \"path\": \"arguments.command\",\n          \"fix\": \"Block cloud metadata endpoints (169.254.169.254, metadata.google.internal, 100.100.100.200) at the network layer, not only in the validator.\",\n          \"data\": {\n            \"url\": \"http://169.254.169.254/latest/meta-data/\"\n          }\n        },\n        {\n          \"code\": \"ARG-COMMAND-CHAIN\",\n          \"severity\": \"high\",\n          \"message\": \"unquoted command chaining (; && ||) in a shell argument\",\n          \"path\": \"arguments.command\",\n          \"fix\": \"Never pass a model-generated string to a shell. Use an argv list with no shell=True and reject unquoted ; && ||.\",\n          \"data\": {\n            \"value\": \"ls; rm -rf /var/lib/data && curl http://169.254.169.254/latest/meta-data/\"\n          }\n        },\n        {\n          \"code\": \"ARG-PATH-TRAVERSAL\",\n          \"severity\": \"high\",\n          \"message\": \"path traversal sequence escapes the working directory\",\n          \"path\": \"arguments.cwd\",\n          \"fix\": \"Normalise the path, join it under a fixed root and verify the resolved path stays inside that root (realpath/commonpath/is_relative_to).\",\n          \"data\": {\n            \"value\": \"../../srv/app\"\n          }\n        }\n      ],\n      \"total\": 3,\n      \"max_severity\": \"high\"\n    },\n    {\n      \"index\": 1,\n      \"tool\": \"file.read\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-ABS-SENSITIVE-PATH\",\n          \"severity\": \"high\",\n          \"message\": \"sensitive absolute path (credentials, system or autostart location)\",\n          \"path\": \"arguments.path\",\n          \"fix\": \"Deny sensitive absolute paths explicitly; run the tool in a sandbox with only the needed directories mounted.\",\n          \"data\": {\n            \"value\": \"C:\\\\Windows\\\\System32\\\\config\\\\SAM\"\n          }\n        }\n      ],\n      \"total\": 1,\n      \"max_severity\": \"high\"\n    },\n    {\n      \"index\": 2,\n      \"tool\": \"http.fetch\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-SSRF-LOOPBACK\",\n          \"severity\": \"high\",\n          \"message\": \"URL targets loopback/unspecified host '127.0.0.1'\",\n          \"path\": \"arguments.url\",\n          \"fix\": \"Resolve the hostname, reject loopback/link-local/private ranges, and use an egress proxy with an allowlist.\",\n          \"data\": {\n            \"url\": \"http://127.0.0.1:8080/admin\"\n          }\n        }\n      ],\n      \"total\": 1,\n      \"max_severity\": \"high\"\n    },\n    {\n      \"index\": 3,\n      \"tool\": \"shell.run\",\n      \"findings\": [\n        {\n          \"code\": \"ARG-ABS-SENSITIVE-PATH\",\n          \"severity\": \"high\",\n          \"message\": \"sensitive absolute path (credentials, system or autostart location)\",\n          \"path\": \"arguments.command\",\n          \"fix\": \"Deny sensitive absolute paths explicitly; run the tool in a sandbox with only the needed directories mounted.\",\n          \"data\": {\n            \"value\": \"cat ~/.ssh/id_rsa\"\n          }\n        }\n      ],\n      \"total\": 1,\n      \"max_severity\": \"high\"\n    }\n  ],\n  \"clean\": false\n}\n",
+      "stderr": "",
+      "expect_exit": null
+    }
+  ],
+  "examples": [
+    {
+      "path": "examples/dangerous_call.json",
+      "bytes": 513,
+      "sha256": "fa53181d976729aa60da60c027a691fc647918bbc731483404c027084a8c4476"
+    },
+    {
+      "path": "examples/clean_call.json",
+      "bytes": 391,
+      "sha256": "5859593398c1f1f1da70547ab6d738a45a3fda5e3a84a0ead8bf33424192ee3c"
+    },
+    {
+      "path": "examples/bad_schema_call.json",
+      "bytes": 246,
+      "sha256": "b298f3d8ef9a78130579c23b72f82b9f586903e5edfab172999a27c3303d3a73"
+    },
+    {
+      "path": "examples/tools.json",
+      "bytes": 963,
+      "sha256": "d76444f840cd1119efb539d1e03fcd72b28d71dd7b4684cf22bdc3a8e4638ab4"
+    }
+  ],
+  "extra_files": []
+}

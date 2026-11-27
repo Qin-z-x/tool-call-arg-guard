@@ -1,0 +1,38 @@
+{
+  "tools": [
+    {
+      "name": "weather.get",
+      "parameters": {
+        "type": "object",
+        "required": ["city"],
+        "properties": {
+          "city": {"type": "string", "maxLength": 64},
+          "units": {"type": "string", "enum": ["metric", "imperial"]},
+          "days": {"type": "integer", "minimum": 1, "maximum": 14}
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "file.read",
+      "parameters": {
+        "type": "object",
+        "required": ["path"],
+        "properties": {"path": {"type": "string", "maxLength": 512}},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "shell.run",
+      "parameters": {
+        "type": "object",
+        "required": ["command"],
+        "properties": {
+          "command": {"type": "string", "maxLength": 512},
+          "cwd": {"type": "string", "maxLength": 256}
+        },
+        "additionalProperties": false
+      }
+    }
+  ]
+}

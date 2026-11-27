@@ -1,0 +1,8 @@
+{
+  "calls": [
+    {"tool": "weather.get", "arguments": {"city": "Berlin", "units": "metric", "days": 3}},
+    {"tool": "file.read", "arguments": {"path": "./data/report-2026.csv"}},
+    {"tool": "http.fetch", "arguments": {"url": "https://api.example.com/v1/status?limit=5"}},
+    {"tool": "translate.text", "arguments": {"text": "Use a semicolon; it is fine here.", "target": "fr"}}
+  ]
+}
