@@ -199,3 +199,5 @@ cloud metadata SSRF research, and the general LLM tool-calling security literatu
 
 - GitHub 主页（全部 14 个项目）：https://github.com/Qin-Z-x
 - B站演示合集（7 工具 4 分钟）：https://www.bilibili.com/video/BV1jH1pz4ED7
+
+- 7 件套在线索引：https://github.com/Qin-Z-x/llm-security-toolkit （页面：https://qin-z-x.github.io/llm-security-toolkit/）
