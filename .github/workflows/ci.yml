@@ -38,7 +38,7 @@ jobs:
 
       - name: "CLI smoke test: dangerous calls produce high findings"
         run: |
-          python -m toolarg_guard scan examples/dangerous_call.json --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['high'] >= 4, d['summary']; print('findings:', d['summary'])"
+          python -m toolarg_guard scan examples/dangerous_call.json --json > scan.json && python -c "import json; d=json.load(open('scan.json', encoding='utf-8')); assert d['summary']['counts']['high'] >= 4, d['summary']; print('findings:', d['summary'])"
 
       - name: "Clean calls pass the strictest gate"
         run: |
